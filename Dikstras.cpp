@@ -7,12 +7,13 @@
 
 //Updates the distance value of toV if needed
 template<typename ID>
-void Relax(const Vertex<ID>& fromV, Vertex<ID>& toV, vector<ID>& parentArr)
+void Relax(Graph<ID> &graph, const Vertex<ID>& fromV, Edge<ID> edge, vector<ID>& parentArr)
 {
-    unsigned int newDist = fromV.GetWeight(toV.GetID()) + fromV.GetDistance();
+    unsigned int newDist = edge.Weight + fromV.GetDistance();
+    Vertex<ID> &toV = graph.GetVertex(edge.VertId);
     if(newDist < toV.GetDistance())
     {
-        parentArr[toV.GetID()] = fromV.GetID();
+        parentArr[graph.IdToIndex(toV.GetID())] = fromV.GetID();
         toV.SetDistance(newDist);
     }
 }
@@ -66,11 +67,10 @@ vector<ID> Dikstras(Graph<ID> graph, ID startV)
     {
         Vertex<ID>* currV = mpq.top();
         mpq.pop();
-        vector<ID> aList = currV->GetAdjacencyList();
-        //The index, i, is kept track of to find the corresponding weight value in a table
-        for(int i = 0; i < aList.size(); ++i)   
+        vector<Edge<ID>> eList = currV->GetEdgeList();
+        for(Edge<ID> e : eList)   
         {
-            Relax<ID>(*currV, graph.GetVertex(aList[i]), parentArr);
+            Relax<ID>(graph, *currV, e, parentArr);
         }
         Heapify(mpq);
     }
@@ -85,6 +85,7 @@ void PrintArray(vector<ID> arr)
     {
         std::cout << arr[i];
     }
+    std::cout << "\n";
 }
 
 int main()

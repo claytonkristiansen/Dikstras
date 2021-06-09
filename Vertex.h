@@ -7,30 +7,31 @@ using std::map;
 //#define ID unsigned int
 
 template<typename ID>
+struct Edge
+{
+    ID VertId;
+    unsigned int Weight;
+    Edge(ID id, unsigned int weight)
+    {
+        VertId = id;
+        Weight = weight;
+    }
+};
+
+template<typename ID>
 class Vertex
 {
     ID m_id;
-    vector<ID> m_adjacencyList;
-    map<ID, unsigned int> m_weightMap;
+    vector<Edge<ID>> m_edgeList;
     unsigned int m_distance = UINT32_MAX;
 
 public:
 
-    Vertex(ID id, vector<ID> aList)
+    Vertex(ID id, vector<Edge<ID>> eList)
     {
         m_id = id;
-        m_adjacencyList = aList;
-        for(ID id : m_adjacencyList)
-        {
-            m_weightMap.insert(id, 1U);
-        }
+        m_edgeList = eList;
     }    
-    Vertex(ID id, vector<ID> aList, map<ID, unsigned int> wList)
-    {
-        m_id = id;
-        m_adjacencyList = aList;
-        m_weightMap = wList;
-    }
 
     ID GetID() const {return m_id;}
     void SetID(ID id) {m_id = id;}  
@@ -40,11 +41,11 @@ public:
 
     unsigned int GetWeight(ID vID) const
     {
-        return m_weightMap[vID];
+        return this->m_weightMap.at(vID);
     }
 
-    vector<ID> GetAdjacencyList()
+    vector<Edge<ID>> GetEdgeList()
     {
-        return m_adjacencyList;
+        return m_edgeList;
     }
 };

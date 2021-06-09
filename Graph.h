@@ -8,6 +8,8 @@
 using std::vector;
 using std::string;
 
+
+
 template<typename ID>
 class Graph
 {
@@ -26,7 +28,7 @@ public:
             {
                 ID vID;
                 char comma;
-                vector<ID> adjList;
+                vector<Edge<ID>> edgeList;
                 std::stringstream stream(str);
                 stream >> vID;
                 stream >> comma;
@@ -34,10 +36,11 @@ public:
                 while(stream >> currID)
                 {
                     stream >> comma;
-                    adjList.push_back(currID);
+                    Edge<ID> e(currID, 1);
+                    edgeList.push_back(e);
                 }
-                Vertex<ID> currV(vID, adjList);
-                m_vertices.push_back(currV);
+                Vertex<ID> currV(vID, edgeList);
+                AddVertex(currV);
             }
             m_size = m_vertices.size();
         }
@@ -47,8 +50,7 @@ public:
             {
                 ID vID;
                 char comma;
-                vector<ID> adjList;
-                map<ID, unsigned int> weightMap;
+                vector<Edge<ID>> edgeList;
                 std::stringstream stream(str);
                 stream >> vID;
                 stream >> comma;
@@ -57,14 +59,36 @@ public:
                 while(stream >> currID && stream >> comma && stream >> currWeight)
                 {
                     stream >> comma;
-                    adjList.push_back(currID);
-                    weightMap.insert(currID, currWeight);
+                    Edge<ID> e(currID, currWeight);
+                    edgeList.push_back(e);
                 }
-                Vertex<ID> currV(vID, adjList, weightMap);
-                m_vertices.push_back(currV);
+                Vertex<ID> currV(vID, edgeList);
+                AddVertex(currV);
             }
             m_size = m_vertices.size();
         }
+    }
+
+    unsigned int IdToIndex(unsigned int id)
+    {
+        return id;
+    }
+
+    unsigned int IdToIndex(string id)
+    {
+        return 0;  //TODO: implement string to id functionality
+    }
+
+    void AddVertex(Vertex<unsigned int> v)
+    {
+        m_vertices.push_back(v);
+        m_size++;
+    }
+
+    void AddVertex(Vertex<string> v)
+    {
+        m_vertices.push_back(v);    //TODO: implement string add vertex functionality
+        m_size++;
     }
 
     vector<Vertex<ID>>& GetVertexVector()
@@ -74,17 +98,14 @@ public:
 
     Vertex<ID>& GetVertex(ID id)
     {
-        if(id < m_vertices.size())
+        unsigned int index = IdToIndex(id);
+        if(index < m_vertices.size())
         {
-            return m_vertices[id];
+            return m_vertices[index];
         }
         return m_vertices[0];
     }
-    void AddVertex(Vertex<ID> v)
-    {
-        m_vertices.push_back(v);
-        m_size++;
-    }
+    
 
     unsigned int GetSize() const {return m_size;}
 };
