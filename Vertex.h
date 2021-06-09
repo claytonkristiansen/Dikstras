@@ -9,7 +9,7 @@ class Vertex
     ID m_id;
     vector<ID> m_adjacencyList;
     vector<unsigned int> m_weightList;
-    unsigned int m_distance;
+    unsigned int m_distance = UINT32_MAX;
 
 public:
 
@@ -39,5 +39,10 @@ public:
             return m_weightList[vertex];
         }
         else return 0;
+    }
+
+    vector<ID> GetAdjacencyList()
+    {
+        return m_adjacencyList;
     }
 };

@@ -18,7 +18,7 @@ public:
     Graph(std::ifstream& inputFile)
     {
         string str;
-        inputFile >> str;
+        std::getline(inputFile, str);
         if(str == "unweighted")
         {
             while(std::getline(inputFile, str))
@@ -66,7 +66,12 @@ public:
         }
     }
 
-    Vertex GetVertex(ID id)
+    vector<Vertex>& GetVertexVector()
+    {
+        return m_vertices;
+    }
+
+    Vertex& GetVertex(ID id)
     {
         if(id < m_vertices.size())
         {
