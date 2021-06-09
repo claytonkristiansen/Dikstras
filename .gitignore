@@ -37,6 +37,3 @@
 *.exe
 *.out
 *.app
-
-#VSCode stuff
-*.vscode
