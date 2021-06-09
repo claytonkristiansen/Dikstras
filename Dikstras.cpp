@@ -2,13 +2,14 @@
 #include <iostream>
 #include "Graph.h"
 
-
-#define VertexMPQ std::priority_queue<Vertex*, vector<Vertex*>, VertexCompare>
+#define IDType unsigned int
+#define VertexMPQ std::priority_queue<Vertex<ID>*, vector<Vertex<ID>*>, VertexCompare<ID>>
 
 //Updates the distance value of toV if needed
-void Relax(const Vertex& fromV, Vertex& toV, unsigned int indexInAdjacencyList, vector<ID>& parentArr)
+template<typename ID>
+void Relax(const Vertex<ID>& fromV, Vertex<ID>& toV, vector<ID>& parentArr)
 {
-    unsigned int newDist = fromV.GetWeight(indexInAdjacencyList) + fromV.GetDistance();
+    unsigned int newDist = fromV.GetWeight(toV.GetID()) + fromV.GetDistance();
     if(newDist < toV.GetDistance())
     {
         parentArr[toV.GetID()] = fromV.GetID();
@@ -18,10 +19,11 @@ void Relax(const Vertex& fromV, Vertex& toV, unsigned int indexInAdjacencyList, 
 
 //You can ignore this.
 //This is just custom comparison logic to allow the priority_queue to work with Vertex objects 
+template<typename ID>
 class VertexCompare
 {
 public:
-    bool operator()(const Vertex* lhs, const Vertex* rhs) const
+    bool operator()(const Vertex<ID>* lhs, const Vertex<ID>* rhs) const
     {
         if(lhs->GetDistance() > rhs->GetDistance())
         {
@@ -32,6 +34,7 @@ public:
 };
 
 //Must be called on an mpq after a value change
+template<typename ID>
 void Heapify(VertexMPQ& mpq)
 {
     VertexMPQ tempMPQ;
@@ -44,7 +47,8 @@ void Heapify(VertexMPQ& mpq)
 }
 
 //Takes the graph and a starting vertex as parameters
-vector<ID> Dikstras(Graph graph, ID startV)
+template<typename ID>
+vector<ID> Dikstras(Graph<ID> graph, ID startV)
 {
     //ID array declared on the stack, needs to be deleted later
     vector<ID> parentArr(graph.GetSize(), 0);
@@ -53,20 +57,20 @@ vector<ID> Dikstras(Graph graph, ID startV)
     //No need to worry about the template at this time
     VertexMPQ mpq;    
     graph.GetVertex(startV).SetDistance(0);
-    for(Vertex& v : graph.GetVertexVector())
+    for(Vertex<ID>& v : graph.GetVertexVector())
     {
         mpq.push(&v);
     }
     
     while(!mpq.empty())
     {
-        Vertex* currV = mpq.top();
+        Vertex<ID>* currV = mpq.top();
         mpq.pop();
         vector<ID> aList = currV->GetAdjacencyList();
         //The index, i, is kept track of to find the corresponding weight value in a table
         for(int i = 0; i < aList.size(); ++i)   
         {
-            Relax(*currV, graph.GetVertex(aList[i]), i, parentArr);
+            Relax<ID>(*currV, graph.GetVertex(aList[i]), parentArr);
         }
         Heapify(mpq);
     }
@@ -74,6 +78,7 @@ vector<ID> Dikstras(Graph graph, ID startV)
     return parentArr;
 }
 
+template<typename ID>
 void PrintArray(vector<ID> arr)
 {
     for(int i = 0; i < arr.size(); ++i)
@@ -85,8 +90,8 @@ void PrintArray(vector<ID> arr)
 int main()
 {
     std::ifstream inputFile("graph1.txt");
-    Graph graph(inputFile);
-    vector<ID> parentArray = Dikstras(graph, 0);
+    Graph<IDType> graph(inputFile);
+    vector<IDType> parentArray = Dikstras<IDType>(graph, 0);
     PrintArray(parentArray);
     return 0;
 }

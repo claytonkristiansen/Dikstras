@@ -8,10 +8,11 @@
 using std::vector;
 using std::string;
 
+template<typename ID>
 class Graph
 {
     unsigned int m_size = 0;
-    vector<Vertex> m_vertices;
+    vector<Vertex<ID>> m_vertices;
 
 public:
 
@@ -35,7 +36,7 @@ public:
                     stream >> comma;
                     adjList.push_back(currID);
                 }
-                Vertex currV(vID, adjList);
+                Vertex<ID> currV(vID, adjList);
                 m_vertices.push_back(currV);
             }
             m_size = m_vertices.size();
@@ -47,7 +48,7 @@ public:
                 ID vID;
                 char comma;
                 vector<ID> adjList;
-                vector<unsigned int> weightList;
+                map<ID, unsigned int> weightMap;
                 std::stringstream stream(str);
                 stream >> vID;
                 stream >> comma;
@@ -57,21 +58,21 @@ public:
                 {
                     stream >> comma;
                     adjList.push_back(currID);
-                    weightList.push_back(currWeight);
+                    weightMap.insert(currID, currWeight);
                 }
-                Vertex currV(vID, adjList, weightList);
+                Vertex<ID> currV(vID, adjList, weightMap);
                 m_vertices.push_back(currV);
             }
             m_size = m_vertices.size();
         }
     }
 
-    vector<Vertex>& GetVertexVector()
+    vector<Vertex<ID>>& GetVertexVector()
     {
         return m_vertices;
     }
 
-    Vertex& GetVertex(ID id)
+    Vertex<ID>& GetVertex(ID id)
     {
         if(id < m_vertices.size())
         {
@@ -79,7 +80,7 @@ public:
         }
         return m_vertices[0];
     }
-    void AddVertex(Vertex v)
+    void AddVertex(Vertex<ID> v)
     {
         m_vertices.push_back(v);
         m_size++;
